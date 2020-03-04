@@ -61,4 +61,14 @@ mod tests {
         );
         assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 9);
     }
+
+    #[test]
+    fn given_paragraph_wrap_text() {
+        let result = wrap_text(
+            String::from("I'm meant to be writing at this moment. What I mean is, I'm meant to be writing something else at this moment. The document I'm meant to be writing is, of course, open in another program on my computer and is patiently awaiting my attention. Yet here I am plonking down senseless sentiments in this paragraph because it's easier to do than to work on anything particularly meaningful. I am grateful for the distraction."),
+            37,
+        );
+        println!("{}", result);
+        assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 12);
+    }
 }
