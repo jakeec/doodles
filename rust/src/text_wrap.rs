@@ -48,4 +48,13 @@ mod tests {
         );
         assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 3);
     }
+
+    #[test]
+    fn given_block_of_text_wrap_lines_width_3() {
+        let result = wrap_text(
+            String::from("The quick brown fox jumped over the lazy dog"),
+            3,
+        );
+        assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 9);
+    }
 }
