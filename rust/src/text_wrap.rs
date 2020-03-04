@@ -27,7 +27,7 @@ pub fn wrap_text(text_to_wrap: String, max_line_length: i32) -> String {
         i += 1;
     }
 
-    wrapped_text
+    String::from(wrapped_text.trim_end_matches('\n'))
 }
 
 #[cfg(test)]
@@ -37,8 +37,15 @@ mod tests {
     #[test]
     fn given_two_words_of_combined_length_20_and_max_line_length_of_15_wrap_over_two_lines() {
         let result = wrap_text(String::from("1234567890 1234567890"), 15);
-        println!("{}", result);
-        println!("{:?}", result.split("\n").collect::<Vec<&str>>());
         assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 2);
+    }
+
+    #[test]
+    fn given_block_of_text_wrap_lines() {
+        let result = wrap_text(
+            String::from("The quick brown fox jumped over the lazy dog"),
+            15,
+        );
+        assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 3);
     }
 }
