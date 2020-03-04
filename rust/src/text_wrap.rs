@@ -3,12 +3,14 @@ pub fn wrap_text(text_to_wrap: String, max_line_length: i32) -> String {
 
     let mut i = 0;
     let mut wrapped_text = String::from("");
+
     while i < words.len() {
         let mut chars_this_line: i32 = 0;
         wrapped_text += words[i];
         wrapped_text += " ";
         chars_this_line += (words[i].len() + 1) as i32;
         let mut j = i + 1;
+
         if j < words.len() {
             while max_line_length - chars_this_line >= words[j].len() as i32 {
                 chars_this_line += words[j].len() as i32;
@@ -22,12 +24,14 @@ pub fn wrap_text(text_to_wrap: String, max_line_length: i32) -> String {
                     j += 1;
                 }
             }
-            wrapped_text += "\n";
+            if j > i {
+                wrapped_text += "\n";
+            }
         }
         i += 1;
     }
 
-    String::from(wrapped_text.trim_end_matches('\n'))
+    wrapped_text
 }
 
 #[cfg(test)]
