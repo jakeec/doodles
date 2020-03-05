@@ -18,28 +18,44 @@ fn arabic_to_roman(number: usize) -> String {
     }
 
     exponents.reverse();
-
-    let mut roman = String::from("");
+    println!("EXPONENTS: {:?}", exponents);
+    let mut roman = Vec::new();
 
     for (i, exponent) in exponents.iter().enumerate() {
-        roman += match (i, exponent) {
+        match (i, exponent) {
             (0, x) => match &x[..] {
-                "1" => "I",
-                "2" => "II",
-                "3" => "III",
-                "4" => "IV",
-                "5" => "V",
-                "6" => "VI",
-                "7" => "VII",
-                "8" => "VIII",
-                "9" => "IX",
+                "0" => (),
+                "1" => roman.push("I"),
+                "2" => roman.push("II"),
+                "3" => roman.push("III"),
+                "4" => roman.push("IV"),
+                "5" => roman.push("V"),
+                "6" => roman.push("VI"),
+                "7" => roman.push("VII"),
+                "8" => roman.push("VIII"),
+                "9" => roman.push("IX"),
                 _ => panic!("Never"),
             },
-            _ => "",
+            (1, x) => match &x[..] {
+                "0" => (),
+                "10" => roman.push("X"),
+                "20" => roman.push("XX"),
+                "30" => roman.push("XXX"),
+                "40" => roman.push("XL"),
+                "50" => roman.push("L"),
+                "60" => roman.push("LX"),
+                "70" => roman.push("LXX"),
+                "80" => roman.push("LXXX"),
+                "90" => roman.push("XC"),
+                _ => panic!("Never"),
+            },
+            _ => (),
         }
     }
 
-    roman
+    roman.reverse();
+    println!("ROMAN: {:?}", roman);
+    String::from(roman.join(""))
     // String::from("FU")
 
     // match &arabic[..] {
@@ -72,8 +88,18 @@ mod test {
     }
 
     #[test]
+    fn given_two_digit_numbers_return_correct_roman_numerals() {
+        let arabics = [13, 90];
+        let expected = ["XIII", "XC"];
+        for i in 0..arabics.len() {
+            let roman = arabic_to_roman(arabics[i]);
+            assert_eq!(&roman, expected[i]);
+        }
+    }
+
+    #[test]
     fn given_13_return_XIII() {
-        let arabic = 13456;
+        let arabic = 13;
         let expected = "XIII";
         let roman = arabic_to_roman(arabic);
         assert_eq!(&roman, expected);
