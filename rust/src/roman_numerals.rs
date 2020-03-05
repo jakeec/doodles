@@ -1,8 +1,5 @@
 fn arabic_to_roman(number: usize) -> String {
     let arabic = format!("{}", number);
-
-    // split into exponents
-    // e.g. 249 = [200,40,9]
     let mut exponents = Vec::<String>::new();
     for (i, digit) in arabic.chars().enumerate() {
         let exp = format!(
@@ -18,59 +15,36 @@ fn arabic_to_roman(number: usize) -> String {
     }
 
     exponents.reverse();
-    println!("EXPONENTS: {:?}", exponents);
     let mut roman = Vec::new();
 
     for (i, exponent) in exponents.iter().enumerate() {
-        match (i, exponent) {
-            (0, x) => match &x[..] {
-                "0" => (),
-                "1" => roman.push("I"),
-                "2" => roman.push("II"),
-                "3" => roman.push("III"),
-                "4" => roman.push("IV"),
-                "5" => roman.push("V"),
-                "6" => roman.push("VI"),
-                "7" => roman.push("VII"),
-                "8" => roman.push("VIII"),
-                "9" => roman.push("IX"),
-                _ => panic!("Never"),
-            },
-            (1, x) => match &x[..] {
-                "0" => (),
-                "10" => roman.push("X"),
-                "20" => roman.push("XX"),
-                "30" => roman.push("XXX"),
-                "40" => roman.push("XL"),
-                "50" => roman.push("L"),
-                "60" => roman.push("LX"),
-                "70" => roman.push("LXX"),
-                "80" => roman.push("LXXX"),
-                "90" => roman.push("XC"),
-                _ => panic!("Never"),
-            },
+        match (i, &exponent[..1]) {
+            (_, "0") => (),
+            (0, x) => roman.push(convert_symbol(x, "I", "V", "X")),
+            (1, x) => roman.push(convert_symbol(x, "X", "L", "C")),
+            (2, x) => roman.push(convert_symbol(x, "C", "D", "M")),
             _ => (),
         }
     }
 
     roman.reverse();
-    println!("ROMAN: {:?}", roman);
     String::from(roman.join(""))
-    // String::from("FU")
+}
 
-    // match &arabic[..] {
-    //     "1" => String::from("I"),
-    //     "2" => String::from("II"),
-    //     "3" => String::from("III"),
-    //     "4" => String::from("IV"),
-    //     "5" => String::from("V"),
-    //     "6" => String::from("VI"),
-    //     "7" => String::from("VII"),
-    //     "8" => String::from("VIII"),
-    //     "9" => String::from("IX"),
-    //     "10" => String::from("X"),
-    //     _ => panic!("Not implemented!"),
-    // }
+fn convert_symbol(digit: &str, l: &str, m: &str, u: &str) -> String {
+    match digit {
+        "0" => panic!("Evil number!"),
+        "1" => format!("{l}", l = l),
+        "2" => format!("{l}{l}", l = l),
+        "3" => format!("{l}{l}{l}", l = l),
+        "4" => format!("{l}{m}", l = l, m = m),
+        "5" => format!("{m}", m = m),
+        "6" => format!("{m}{l}", m = m, l = l),
+        "7" => format!("{m}{l}{l}", m = m, l = l),
+        "8" => format!("{m}{l}{l}{l}", m = m, l = l),
+        "9" => format!("{l}{u}", l = l, u = u),
+        _ => panic!("Never"),
+    }
 }
 
 #[cfg(test)]
@@ -89,8 +63,8 @@ mod test {
 
     #[test]
     fn given_two_digit_numbers_return_correct_roman_numerals() {
-        let arabics = [13, 90];
-        let expected = ["XIII", "XC"];
+        let arabics = [13, 90, 76, 35];
+        let expected = ["XIII", "XC", "LXXVI", "XXXV"];
         for i in 0..arabics.len() {
             let roman = arabic_to_roman(arabics[i]);
             assert_eq!(&roman, expected[i]);
@@ -98,10 +72,12 @@ mod test {
     }
 
     #[test]
-    fn given_13_return_XIII() {
-        let arabic = 13;
-        let expected = "XIII";
-        let roman = arabic_to_roman(arabic);
-        assert_eq!(&roman, expected);
+    fn given_three_digit_numbers_return_correct_roman_numerals() {
+        let arabics = [135, 907, 763, 354];
+        let expected = ["CXXXV", "CMVII", "DCCLXIII", "CCCLIV"];
+        for i in 0..arabics.len() {
+            let roman = arabic_to_roman(arabics[i]);
+            assert_eq!(&roman, expected[i]);
+        }
     }
 }
