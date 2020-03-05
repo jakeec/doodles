@@ -69,7 +69,7 @@ mod tests {
 
     #[test]
     fn add_macro_contract_failure() {
-        let result = add_macro(2, 3);
+        let result = add_macro(3, 2);
     }
 
     #[test]
