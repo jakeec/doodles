@@ -23,6 +23,7 @@ fn arabic_to_roman(number: usize) -> String {
             (0, x) => roman.push(convert_symbol(x, "I", "V", "X")),
             (1, x) => roman.push(convert_symbol(x, "X", "L", "C")),
             (2, x) => roman.push(convert_symbol(x, "C", "D", "M")),
+            (3, x) => roman.push(convert_symbol(x, "M", "V", "X")),
             _ => (),
         }
     }
@@ -75,6 +76,16 @@ mod test {
     fn given_three_digit_numbers_return_correct_roman_numerals() {
         let arabics = [135, 907, 763, 354];
         let expected = ["CXXXV", "CMVII", "DCCLXIII", "CCCLIV"];
+        for i in 0..arabics.len() {
+            let roman = arabic_to_roman(arabics[i]);
+            assert_eq!(&roman, expected[i]);
+        }
+    }
+
+    #[test]
+    fn given_four_digit_numbers_return_correct_roman_numerals() {
+        let arabics = [1350, 9073, 7631, 3549];
+        let expected = ["MCCCL", "MXLXXIII", "VMMDCXXXI", "MMMDXLIX"];
         for i in 0..arabics.len() {
             let roman = arabic_to_roman(arabics[i]);
             assert_eq!(&roman, expected[i]);
