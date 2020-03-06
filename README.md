@@ -14,3 +14,6 @@ A code notebook for dumping snippets and ideas that can be revisited or reused l
 ## [JavaScript](/javascript)
 
 ## [C#](/csharp)
+
+- ### [Result type](/csharp/Result.cs)
+  Implementation of a type similar to Rust's Result type. The calling scope is forced to account for error scenarios rather than blindly wrapping everything in a try-catch block
