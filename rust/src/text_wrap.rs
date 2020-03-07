@@ -1,4 +1,5 @@
 pub fn wrap_text(text_to_wrap: String, max_line_length: i32) -> String {
+    let text_to_wrap = text_to_wrap.trim();
     let words: Vec<&str> = text_to_wrap.split(" ").collect();
 
     let mut i = 0;
@@ -70,5 +71,12 @@ mod tests {
         );
         println!("{}", result);
         assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 12);
+    }
+
+    #[test]
+    fn given_trailing_space_handle_it() {
+        let result = wrap_text(String::from("test "), 37);
+        println!("{}", result);
+        assert_eq!(result.split("\n").collect::<Vec<&str>>().len(), 1);
     }
 }
