@@ -2,8 +2,8 @@
 extern crate contracts;
 
 mod design_by_contract;
-mod recursive_structures;
 mod roman_numerals;
+mod solitaire;
 mod text_wrap;
 
 fn main() {
