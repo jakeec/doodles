@@ -13,6 +13,9 @@ A code notebook for dumping snippets and ideas that can be revisited or reused l
 
 ## [JavaScript](/javascript)
 
+- ### [React best practices](/javascript/react-best-practices)
+  An example React application that demonstrates what are in my opinion some of the best practices for React development.
+
 ## [C#](/csharp)
 
 - ### [Result type](/csharp/Result.cs)
