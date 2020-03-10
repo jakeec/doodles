@@ -39,20 +39,26 @@ impl Chip8 {
         use std::fs;
 
         let bytes = fs::read(path).unwrap();
+        for i in 0..bytes.len() {
+            self.memory[i + 512] = bytes[i];
+        }
         let mut opcodes: Vec<u16> = Vec::new();
         for chunk in bytes.chunks(2) {
             let opcode = ((chunk[0] as u16) << 8) | chunk[1] as u16;
             opcodes.push(opcode);
         }
-
-        self.opcodes = opcodes;
     }
 
     fn run(&mut self) {
-        while self.pc < self.opcodes.len() as u16 {
-            println!("RUNNING OPCODE: {:X}", self.opcodes[self.pc as usize]);
-            self.run_opcode(self.opcodes[self.pc as usize]);
-            self.pc += 1;
+        self.pc = 512;
+        println!("{}", self.memory[self.pc as usize + 2]);
+        while self.pc < self.memory.len() as u16 {
+            let high = self.memory[self.pc as usize];
+            let low = self.memory[self.pc as usize + 1];
+            let opcode = ((high as u16) << 8) | low as u16;
+            println!("running opcode: {:X}", opcode);
+            self.run_opcode(opcode);
+            self.pc += 2;
         }
     }
 
@@ -94,6 +100,13 @@ impl Chip8 {
         }
     }
 
+    fn subroutine(&mut self, address: u16) {
+        let high = self.memory[address as usize];
+        let low = self.memory[(address + 1) as usize];
+        let opcode = ((high as u16) << 8) | low as u16;
+        self.run_opcode(opcode);
+    }
+
     fn run_opcode(&mut self, opcode: u16) {
         let nnn = opcode & 0x0FFF;
         let nn = opcode as u8;
@@ -108,9 +121,16 @@ impl Chip8 {
         let n = opcode.3;
 
         match opcode {
-            (0x1, _, _, _) => self.pc = nnn - 0x200,
-            (0xA, _, _, _) => self.i_register = nnn - 0x200,
+            (0x1, _, _, _) => self.pc = nnn,
+            (0x2, _, _, _) => self.subroutine(nnn),
+            (0xA, _, _, _) => self.i_register = nnn,
             (0xD, _, _, _) => self.draw(x, y, n),
+            (0x6, _, _, _) => self.registers[x as usize] = nn,
+            (0x9, _, _, 0x0) => {
+                if self.registers[x as usize] != self.registers[y as usize] {
+                    self.pc += 2;
+                }
+            }
             _ => panic!(
                 "Unknown opcode: {:X}{:X}{:X}{:X}",
                 opcode.0, opcode.1, opcode.2, opcode.3
