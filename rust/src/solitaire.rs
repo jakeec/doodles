@@ -5,6 +5,7 @@ use std::slice::Iter;
 
 #[derive(Debug, Clone, Copy)]
 enum Suit {
+    Nil,
     Hearts,
     Diamonds,
     Clubs,
@@ -21,6 +22,7 @@ impl Suit {
 
 #[derive(Debug, Clone, Copy)]
 enum Number {
+    Nil,
     Ace,
     Two,
     Three,
@@ -47,13 +49,14 @@ impl Number {
 
 #[derive(Debug)]
 struct Solitaire {
+    display: Display,
     deck: Vec<Card>,
     piles: Vec<Vec<Card>>,
     foundations: Vec<Vec<Card>>,
 }
 
 impl Solitaire {
-    fn new() -> Self {
+    fn new(display: Display) -> Self {
         let mut cards: Vec<Card> = Vec::new();
         for suit in Suit::iter() {
             for number in Number::iter() {
@@ -62,6 +65,7 @@ impl Solitaire {
         }
 
         Self {
+            display,
             deck: cards,
             piles: Vec::new(),
             foundations: Vec::new(),
@@ -89,14 +93,39 @@ impl Solitaire {
             }
         }
     }
+
+    fn deal_piles(&mut self) {
+        for i in 0..7 {
+            let mut pile: Vec<Card> = Vec::new();
+            for _j in 0..i + 1 {
+                pile.push(self.deck.pop().unwrap());
+            }
+            self.piles.push(pile);
+        }
+    }
+
+    fn print(&mut self) {
+        let deck_space = Card(Suit::Nil, Number::Nil);
+        deck_space.print_card(&mut self.display, 1, 1);
+        let piles_start_x = 1;
+        let piles_start_y = 5;
+        for i in 0..self.piles.len() {
+            let x: u32 = piles_start_x + (i as u32 * 5);
+            for j in 0..self.piles[i].len() {
+                self.piles[i][j].print_card(&mut self.display, x, piles_start_y + (j as u32 * 2))
+            }
+        }
+        self.display.print();
+    }
 }
 
 #[test]
 fn solitaire_test() {
-    let mut solitaire = Solitaire::new();
-    println!("{:?}", solitaire);
+    let mut display = Display::new(80, 20);
+    let mut solitaire = Solitaire::new(display);
     solitaire.shuffle();
-    println!("{:?}", solitaire);
+    solitaire.deal_piles();
+    solitaire.print();
     assert!(false);
 }
 
@@ -107,6 +136,7 @@ impl Card {
     fn get_printable_number(&self, number: &Number) -> char {
         use Number::*;
         match number {
+            Nil => ' ',
             Ace => 'A',
             Two => '2',
             Three => '3',
@@ -125,6 +155,7 @@ impl Card {
     fn get_printable_suit(&self, suit: &Suit) -> char {
         use Suit::*;
         match suit {
+            Nil => ' ',
             Hearts => '♥',
             Diamonds => '♦',
             Clubs => '♣',
@@ -153,21 +184,21 @@ impl Card {
     fn print_card(&self, display: &mut Display, x: u32, y: u32) {
         let drawable_card = self.draw_card();
         let (width, height) = display.dimensions;
+        let first_x = x;
         let mut x = x;
         let mut y = y;
         for i in 0..drawable_card.len() {
-            println!("x: {}", x);
-            println!("y: {}", y);
             display.buffer[((y * width) + x) as usize] = drawable_card[i];
             x += 1;
             if (i + 1) % 4 == 0 && i != 0 {
                 y += 1;
-                x = 0;
+                x = first_x;
             }
         }
     }
 }
 
+#[derive(Debug)]
 struct Display {
     buffer: Vec<char>,
     dimensions: (u32, u32),
