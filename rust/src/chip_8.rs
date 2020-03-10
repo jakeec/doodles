@@ -93,7 +93,12 @@ impl Chip8 {
     fn print(&self) {
         for row in &self.vram {
             for pixel in row {
-                print!("{}", pixel);
+                match pixel {
+                    0 => print!(" "),
+                    1 => print!("\x1b[41;1m \x1b[0m"),
+                    _ => panic!("invalid bit!"),
+                }
+                // print!("{}", pixel);
             }
 
             print!("\n");
@@ -123,6 +128,27 @@ impl Chip8 {
         match opcode {
             (0x1, _, _, _) => self.pc = nnn,
             (0x2, _, _, _) => self.subroutine(nnn),
+            (0x3, _, _, _) => {
+                if self.registers[x as usize] == nn {
+                    self.pc += 2;
+                }
+            }
+            (0x4, _, _, _) => {
+                if self.registers[x as usize] != nn {
+                    self.pc += 2;
+                }
+            }
+            (0x5, _, _, 0x0) => {
+                if self.registers[x as usize] == self.registers[y as usize] {
+                    self.pc += 2;
+                }
+            }
+            (0x7, _, _, _) => {
+                let vx = self.registers[x as usize] as u16;
+                let val = nn as u16;
+                let result = vx + val;
+                self.registers[x as usize] = result as u8;
+            }
             (0xA, _, _, _) => self.i_register = nnn,
             (0xD, _, _, _) => self.draw(x, y, n),
             (0x6, _, _, _) => self.registers[x as usize] = nn,
