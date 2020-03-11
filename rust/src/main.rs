@@ -8,5 +8,9 @@ mod solitaire;
 mod text_wrap;
 
 fn main() {
-    println!("Hello, world!");
+    use chip_8::Chip8;
+    print!("{}[2J", 27 as char);
+    let mut chip8 = Chip8::new();
+    chip8.load_rom("./src/maze.ch8");
+    chip8.run();
 }
